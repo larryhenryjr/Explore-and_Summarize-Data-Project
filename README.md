@@ -1,8 +1,13 @@
 # Project: Explore and Summarize Data
-Udacity Data Analysis Project 4
+As part of Udacity's Data Analysis Project, I will use R and apply exploratory data analysis techniques to explore relationships in one variable to multiple variables and to explore a selected data set for distributions, outliers, and anomalies.
+
+I will be exploring the Prosper loan dataset (a p2p lending platform) with R and RStudio. The main purpose of this analysis is to explore the various factors that affect borrowers' rate. The data can be find [here]()
+
+## Project Files
+* `explore-and-summarize-data.rmd`: R markdown for the analysis
+* `explore-and-summarize-data.html`: knitted html file
 
 ## Project Overview
-As part of Udacity's Data Analysis Project, I will use R and apply exploratory data analysis techniques to explore relationships in one variable to multiple variables and to explore a selected data set for distributions, outliers, and anomalies.
 
 **Why this Project?**<br>
 Exploratory Data Analysis (EDA) is the numerical and graphical examination of data characteristics and relationships before formal, rigorous statistical analyses are applied.
@@ -20,6 +25,3 @@ After completing the project, you will:
 "If you are looking for a career where your services will be in high demand, you should find something where you provide a scarce, complementary service to something that is getting ubiquitous and cheap. So what’s getting ubiquitous and cheap? Data. And what is complementary to data? Analysis"
 
 — Hal Varian, UC Berkeley, Chief Economist at Google
-
-## Presentation
-[Explore and Summarize Data]()/ "Explore & Summarize Data")
