@@ -22,6 +22,7 @@ This data set contains 113,937 loans with 81 variables on each loan, including l
 The main purpose of this project is to summarize the characteristics of variables that can affect the loan status and to get some ideas about the relationships among multiple variables using summary statistics and data visualizations.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+
 # Load all of the packages that you end up using in your analysis in this code
 # chunk.
 
@@ -56,6 +57,7 @@ library(reshape2)
 ```
 
 ```{r  echo=FALSE, message=FALSE, warning=FALSE, Global_seetings}
+
 # To set global options that apply to every chunk in your file, call knitr::opts_chunk$set in a code chunk. Knitr will treat each option that you pass to knitr::opts_chunk$set as a global default that can be overwritten in individual chunk headers.
 knitr::opts_chunk$set(echo = FALSE,
                       warning = FALSE,
@@ -75,13 +77,18 @@ knitr::opts_chunk$set(dev = "svg")
 
 # chunk option dev="png" is the default raster graphics format for HTML output
 knitr::opts_chunk$set(dev = "png")
+
+# Global option for table formats
+options(knitr.table.format = "simple")
+
 ```
 
 ## Initial Dataset Exploration
 
 First, we load the Prosper Loan Data. Here are the observations and variable counts.
 
-```{r echo=FALSE, Load_the_Data_Display_Counts}
+```{r echo=FALSE, message=FALSE, warning=FALSE, Load_the_Data_Display_Counts}
+
 # Load the Data
 loandata <-
   read.csv(
@@ -89,23 +96,29 @@ loandata <-
   )
 
 dim(loandata)
+
 ```
 
 Here are the object names of the dataset.
 
-```{r echo=FALSE, Load_the_Data_Display_Counts_2}
+```{r echo=FALSE, message=FALSE, warning=FALSE, Load_the_Data_Display_Counts_2}
+
 names(loandata)
+
 ```
 
 Here's the initial structure of the dataframe.
 
-```{r echo=FALSE, data_frame_structure}
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_frame_structure}
+
 str(loandata)
+
 ```
 
 Next, I will use a subset of this dataset for performing an analysis. The main purpose of this analysis is to explore the various factors that affect borrowers' rates. The following are the variables I would like to use.
 
-```{r echo=FALSE, Subseting}
+```{r echo=FALSE, message=FALSE, warning=FALSE, Subseting}
+
 # Subset the dataframe
 loandata <- subset(loandata,
                    select = c(LoanNumber, LoanOriginalAmount, LoanOriginationDate, LoanOriginationQuarter,
@@ -116,13 +129,15 @@ loandata <- subset(loandata,
 
 # Listing the column names for the subset data
 names(loandata)
+
 ```
 
 Based on my observation of the variables in this dataset, there are data that are not in good form.
 
 As a result, I'll transform **Term** and **ListingCategory** columns from 'numeric' to 'factor', and transform **ListingCreationDate** column from 'factor' to 'Date'. The following is the dataset's structure transformed.
 
-```{r echo=FALSE, Transforming_Data}
+```{r echo=FALSE, message=FALSE, warning=FALSE, Transforming_Data}
+
 # Factorizing rating, category, and term as these are the key variables we'd investigate throughout the dataset
 
 # Term: numeric to factors
@@ -156,6 +171,7 @@ loandata$ProsperScore = factor(loandata$ProsperScore)
 
 # Display the structure of the subset data
 str(loandata)
+
 ```
 
 # Univariate Plots Section
@@ -166,25 +182,51 @@ In this section, I will perform some preliminary exploration of the transformed 
 
 First, let's take a look on various categorical variables starting with Term.
 
-```{r echo=FALSE, Term}
+```{r echo=FALSE, message=FALSE, warning=FALSE Term}
+
 # Bar chart: Term
 ggplot(data = loandata, aes(x = Term)) +
-  geom_bar(color = 'black', fill = '#007EE5') +
-  theme(axis.text.x = element_text(angle = 60, vjust = 0.6)) +
-  ylab('Count')
+  geom_bar(color = 'black',
+           fill = '#96ADBD',
+           width = 0.7) +
+  geom_text(
+    aes(label = ..count..),
+    stat = "count",
+    vjust = -0.2,
+    colour = "black",
+    size = 3.5) +
+  ggtitle('Number of Loans by Term') +
+  scale_y_continuous(name = 'Count',
+                     limits = c(0, 90000),
+                     breaks = breaks_width(20000)) +
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.6))
+
 
 # Proportion table: Term
 prop.table(table(loandata$Term))
+
 ```
 > Above 90% of the loans in this dataset are with term more than 1 year. Most of them is of 3 years.    
 
-```{r echo=FALSE, LoanStatus}
+```{r echo=FALSE, message=FALSE, warning=FALSE, LoanStatus}
 
 # Horizontal bar chart:  LoanStatus
 ggplot(data = loandata, aes(x = LoanStatus)) +
-  geom_bar(color = 'black', fill = '#007EE5') +
+  geom_bar(color = 'black', fill = '#96ADBD') +
   coord_flip() +
-  ylab('Count')
+  labs(x = ' ', y = 'Count') +
+  ylim(0, 60000) +
+  geom_text(
+    aes(label = ..count..),
+    stat = "count",
+    hjust = -0.2,
+    colour = "black",
+    size = 3) +
+  ggtitle('Number of Loans by Loan Status') +
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5))
 
 # Proportion table: LoanStatus
 prop.table(table(loandata$LoanStatus))
@@ -192,60 +234,108 @@ prop.table(table(loandata$LoanStatus))
 ```
 > There are four major loan status: "Defaulted", "Current", "Completed", and "Chargedoff."    
 
-```{r echo=FALSE, Prosper_Rating}
+```{r echo=FALSE, message=FALSE, warning=FALSE, Prosper_Rating}
+
 # Bar chart: ProsperRating
 ggplot(data = subset(loandata, ProsperRating != ""), aes(x = ProsperRating)) +
-  geom_bar(color = 'black', fill = '#007EE5') +
-  ylab('Count')
+  geom_bar(color = 'black', fill = '#96ADBD') +
+  geom_text(
+    aes(label = ..count..),
+    stat = "count",
+    vjust = -0.2,
+    colour = "black",
+    size = 3.5) +
+  ggtitle('Number of Loans by Prosper Rating') +
+  scale_y_continuous(name = 'Count',
+                     limits = c(0, 20000),
+                     breaks = breaks_width(5000)) +
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5))
 
 # Proportion table: ProsperRating
 prop.table(table(loandata$ProsperRating))
+
 ```
 > The above bar chart shows Prosper's rating distribution. The unrated loans are removed in this plot.  
 
-```{r echo=FALSE, Employment_Status}
+```{r echo=FALSE, message=FALSE, warning=FALSE, Employment_Status}
 # Horizontal bar chart: Employment_Status
 ggplot(
   data = loandata, aes(x = EmploymentStatus)) +
-  geom_bar(color = 'black', fill = '#007EE5') +
+  geom_bar(color = 'black', fill = '#96ADBD') +
   coord_flip() +
-  ylab('Count')
+  labs(x = ' ', y = 'Count') +
+  ylim(0, 70000) +
+  geom_text(
+    aes(label = ..count..),
+    stat = "count",
+    hjust = -0.2,
+    colour = "black",
+    size = 3) +
+  ggtitle('Number of Loans by Employment Status') +
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5))
 
 # Proportion table : Employment_Status
 prop.table(table(loandata$EmploymentStatus))
 ```
 > The majority of Prosper users are either employed or have a full-time job.    
 
-```{r echo=FALSE, Homeowner}
+```{r echo=FALSE, message=FALSE, warning=FALSE, Homeowner}
+
 # Pie chart: IsBorrowerHomeowner
 ggplot(
-  data = loandata, aes(x = "", fill = IsBorrowerHomeowner)) +
+  data = loandata, aes(x = '', fill = IsBorrowerHomeowner)) +
   geom_bar() +
-  coord_polar(theta = "y") +
-  scale_fill_manual(values=c("#888888", "#007EE5"))
+  coord_polar(theta = 'y') +
+  scale_fill_manual(values=c('#96ADBD', '#425E72'))+
+  labs(x = NULL, y = NULL) +
+  ggtitle('Number of Borrower Homeowners') +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
 ```
 
 > About half of the users are homeowners.    
 
-```{r echo=FALSE, IncomeRange}
+```{r echo=FALSE, message=FALSE, warning=FALSE, IncomeRange}
+
 # Horizontal bar chart: IncomeRange
 ggplot(
   data = loandata, aes(x = IncomeRange)) + 
-  geom_bar(color = 'black', fill = '#007EE5') + 
-  coord_flip()
+  geom_bar(color = 'black', fill = '#96ADBD') +
+  coord_flip() +
+  labs(x = ' ', y = 'Count') +
+  ylim(0, 35000) +
+  geom_text(
+    aes(label = ..count..),
+    stat = "count",
+    hjust = -0.2,
+    colour = "black",
+    size = 3) +
+  ggtitle('Number of Loans by Income Range') +
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5))
 
 # Proporation table: IncomeRange
 prop.table(table(loandata$IncomeRange))
+
 ```
 > About 70% of borrowers' income are in the range of $25,000 - $100,000    
 
-```{r echo=FALSE, IncomeVerifiable}
+```{r echo=FALSE, message=FALSE, warning=FALSE, IncomeVerifiable}
+
 # Pie chart: IncomeVerifiable
 ggplot(
-  data = loandata, aes(x = "", fill = IncomeVerifiable)) +
+  data = loandata, aes(x = '', fill = IncomeVerifiable)) +
   geom_bar() + 
-  coord_polar(theta = "y") +
-  scale_fill_manual(values=c("#888888", "#007EE5"))
+  coord_polar(theta = 'y') +
+  scale_fill_manual(values=c('#96ADBD', '#425E72')) +
+  labs(x = NULL, y = NULL) +
+  ggtitle('Number of Income Verified Borrowers') +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
 ```
 
 > Most of borrowers have their income verified.    
@@ -255,11 +345,15 @@ ggplot(
 Next, let's take a look on various numerical variables starting with BorrowerRate.
 
 ```{r echo=FALSE, message=FALSE, BorrowerRate_LenderYield}
+
 # Histogram: BorrowerRate
 ggplot(
   data = loandata, aes(x=BorrowerRate)) +
-  geom_histogram(color = 'black', fill = '#007EE5') +
-  ylab('Count')
+  geom_histogram(color = 'black', fill = '#96ADBD') +
+  ggtitle('Number of Loans by Borrower Rate') +
+  ylab('Count') +
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5))
 
 # Summary: BorrowerRate
 summary(loandata$BorrowerRate)
@@ -267,67 +361,105 @@ summary(loandata$BorrowerRate)
 # Histogram: LenderYield
 ggplot(
   data = loandata, aes(x=LenderYield)) + 
-  geom_histogram(color = 'black', fill = '#007EE5') +
-  ylab('Count')
+  geom_histogram(color = 'black', fill = '#96ADBD') +
+  ggtitle('Number of Loans by Lender Yield') +  
+  ylab('Count') +
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5))
 
 # Summary: LenderYield
 summary(loandata$LenderYield)
+
 ```
 > The BorrowerRate has a right-skewed distribution, with a mean of 19.28%, and median of 18.40%. Similarly, the LenderYield also has a right-skewed distribution, with a mean of 18.27%, and median of 17.30%.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, CreditScore}
+
 # Histogram (p1) : CreditScoreRangeLower
 p1 <- ggplot( data = loandata, aes(x=CreditScoreRangeLower)) +
-  geom_histogram(binwidth = 10, color = 'black', fill = '#007EE5') +
+  geom_histogram(binwidth = 10, color = 'black', fill = '#96ADBD') +
   scale_x_continuous(limits = c(400,900)) +
-  ylab('Count')
+  ylab('Count')+
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5))
 
-# Histogram (p1) : CreditScoreRangeLower
+# Histogram (p2) : CreditScoreRangeUpper
 p2 <- ggplot(data = loandata, aes(x=CreditScoreRangeUpper)) +
-  geom_histogram(binwidth = 10, color = 'black', fill = '#007EE5') +
+  geom_histogram(binwidth = 10, color = 'black', fill = '#96ADBD') +
   scale_x_continuous(limits = c(400,900)) +
-  ylab('Count')
+  ylab('Count')+
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5))  
 
 # Plot p1 and p2 in the same column
-grid.arrange(p1, p2, ncol=1)
+grid.arrange(
+  p1,
+  p2,
+  ncol = 1,
+  top = text_grob(label = 'Number of Loans by Credit Score Range',
+                  just = 'right')
+)
+
 ```
 
 > The ranges of credit scores are small compared to the distributions. I will use lower credit score for further analyses. 
 
-```{r echo=FALSE, InquiriesLast6Months}
+```{r echo=FALSE, message=FALSE, warning=FALSE, InquiriesLast6Months}
+
 # Histogram: InquiriesLast6Months
 ggplot(data = subset(loandata, is.na(loandata$InquiriesLast6Months)!=TRUE),
        aes(x=InquiriesLast6Months)) +
-  geom_histogram(binwidth = 1, color = 'black', fill = '#007EE5')
+  geom_histogram(binwidth = 1, color = 'black', fill = '#96ADBD') +
+  ggtitle('Number of Loans by Inquiries Last 6 Months') +  
+  ylab('Count') +
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5))  
 
 # Check unique values
 unique(loandata$InquiriesLast6Months)
+
 ```
 > The distribution of InquiriesLast6Months is right-skewed and long-tailed. Outliers like 105 and 53 exist.
 
-```{r echo=FALSE, PublicRecordsLast10Years}
+```{r echo=FALSE, message=FALSE, warning=FALSE, PublicRecordsLast10Years}
+
 # Histogram: PublicRecordsLast10Years
 ggplot(data = subset(loandata, is.na(loandata$PublicRecordsLast10Years) != TRUE),
        aes(x = PublicRecordsLast10Years)) +
   geom_histogram(binwidth = 1,
                  color = 'black',
-                 fill = '#007EE5')
+                 fill = '#96ADBD') +
+  ggtitle('Number of Loans by Public Records Last 10 Years') +  
+  ylab('Count') +
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5))   
 
 # Check unique values
 unique(loandata$PublicRecordsLast10Years)
+
 ```
 > The distribution of PublicRecordsLast10Years is right-skewed and has some outliers.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, LoanOriginalAmount }
+
 # Histogram: LoanOriginalAmount
 ggplot(data = loandata, aes(x = LoanOriginalAmount)) +
-  geom_histogram(color = 'black', fill = '#007EE5')
+  geom_histogram(color = 'black', fill = '#96ADBD') +
+  ggtitle('Number of Loans by Loan Original Amount') +  
+  ylab('Count') +
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5))    
 
 # Histogram (binwidth adjusted): LoanOriginalAmount
 ggplot(data = loandata, aes(x = LoanOriginalAmount)) +
   geom_histogram(binwidth = 200,
                  color = 'black',
-                 fill = '#007EE5')
+                 fill = '#96ADBD') +
+  labs(title = 'Number of Loans by Loan Original Amount', caption = '*Binwidth adjusted by 100') +    
+  ylab('Count') +
+  theme_pubr() +
+  theme(plot.title = element_text(hjust = 0.5))  
+
 ```
 
 > LoanOriginalAmount also displays a long-tailed distribution, with some numbers especially higher. The reason why these numbers are more frequent might be because they are the exact numbers (eg. 10,000, 15,000, 20,000) that people tend to choose. 
@@ -336,11 +468,26 @@ ggplot(data = loandata, aes(x = LoanOriginalAmount)) +
 
 #### What is the structure of your dataset?
 
-This is a very large dataset with 113937 loan records and 81 features on each loan. For simplicity with the analysis, I only use a subset of the origianl dataset. The subset has same number of records (113937), but only with 15 features that I want to explore. Those features (after transformation) are as follow:
+This is a very large dataset with 113937 loan records and 81 features on each loan. For simplicity with the analysis, I only use a subset of the original dataset. The subset has same number of records (113,937), but only with 15 features that I want to explore. Those features (after transformation) are as follows:
 
-**Categorical:** Term, LoanStatus, ProsperRating, ListingCategory, EmploymentStatus, IsBorrowerHomeowner, IncomeRange, IncomeVerifiable
+**Categorical:** 
+- Term
+- LoanStatus
+- ProsperRating
+- ListingCategory
+- EmploymentStatus
+- IsBorrowerHomeowner
+- IncomeRange
+- IncomeVerifiable
 
-**Numerical:** BorrowerRate, LenderYield, CreditScoreRangeLower, CreditScoreRangeUpper, InquiriesLast6Months, PublicRecordsLast10Years, LoanOriginalAmount
+**Numerical:** 
+- BorrowerRate
+- LenderYield
+- CreditScoreRangeLower
+- CreditScoreRangeUpper
+- InquiriesLast6Months
+- PublicRecordsLast10Years
+- LoanOriginalAmount
 
 ####  What is/are the main feature(s) of interest in your dataset?
 
@@ -352,7 +499,7 @@ The features regarding borrowers' status (EmploymentStatus, IsBorrowerHomeowner,
 
 ####  Did you create any new variables from existing variables in the dataset?
 
-No, I didn't create any new variables. I only convert some variables from numeric to factor. Thoses variables are either instrinsically  categorical or they have only serveral possible values.
+No, I didn't create any new variables. I only converted some variables from numeric to factor. Those variables are either intrinsically categorical or they have only several possible values.
 
 #### Of the features you investigated, were there any unusual distributions? 
 #### Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
@@ -364,21 +511,23 @@ The dataset is tidy and I did not perform other transformation other than changi
 # Bivariate Plots Section
 
 ```{r echo=FALSE, warning=FALSE, Correlation }
+
 # Correlation matrix of numerical variables
 # Text and number sizes are adjusted
 ggcorr(
   data = loandata,
   label = TRUE,
-  label_size = 2,
-  size = 1.4,
-  hjust = 0.7
+  label_size = 1.8,
+  size = 2.3,
+  hjust = 0.8
 )
+
 ```
 
 > The correlation matrix shows that there are two strong positive relationships among the features.
 The first one is the trivial one: credit score upper range and lower range. And the second one is the borrower rate and the lender yield.
 
-```{r echo=FALSE, BorrowerRateLenderYield }
+```{r echo=FALSE, message=FALSE, warning=FALSE, BorrowerRateLenderYield }
 # Scatter plot: BorrowerRate and Lender Yield
 ggplot(data = loandata, aes(x = BorrowerRate, y = LenderYield)) +
   geom_point() +
@@ -389,11 +538,13 @@ cor(loandata$BorrowerRate, loandata$LenderYield)
 ```
 > The borrower rate and the lender yield have nearly perfect linear relationship. This is because Prosper charges a fixed rate on loans so the borrower rate and the lender yield should be strongly positively related.
 
-```{r echo=FALSE, Rating_vs_BorrowerRate }
+```{r echo=FALSE, message=FALSE, warning=FALSE, Rating_vs_BorrowerRate }
+
 # Boxplot: ProsperRating and BorrowerRate
 ggplot(data = subset(loandata, ProsperRating != ""),
        aes(x = ProsperRating, y = BorrowerRate)) +
-  geom_boxplot()
+  geom_boxplot(color = '#425E72')
+
 ```
 
 >This plot shows that Prosper ratings do affect borrowers' rates.
@@ -401,78 +552,92 @@ ggplot(data = subset(loandata, ProsperRating != ""),
 Next, I want to inspect other factors that also have impact on the borrower rate and the Prosper rating.
 I'll start with the borrower rate.
 
-```{r, echo=FALSE, BorrowerRate_vs_Term }
+```{r, echo=FALSE, message=FALSE, warning=FALSE, BorrowerRate_vs_Term }
+
 # Boxplot: Term and BorrowerRate
 ggplot(data = loandata, aes(x = Term, y = BorrowerRate)) +
-  geom_boxplot()
+  geom_boxplot(color = '#425E72')
 
 # Summaries of BorrowerRate by Term
 tapply(loandata$BorrowerRate, loandata$Term, summary)
+
 ```
 > The average rate of the 3-year's is larger than the 1-year's, but is very close to 5-year loan's average. And 5-year loans have smaller range than 3-year loans.
 
-```{r echo=FALSE, OrignalAmount_vs_BorrowerRate}
+```{r echo=FALSE, message=FALSE, warning=FALSE, OrignalAmount_vs_BorrowerRate}
+
 # Scatter plot: LoanOriginalAmount and BorrowerRate
 ggplot(data = loandata, aes(x = LoanOriginalAmount, y = BorrowerRate)) +
-  geom_point(alpha = 0.1)
+  geom_point(alpha = 0.1, color = '#425E72')
 
 # Calcuate the correlation coefficient
 cor(loandata$LoanOriginalAmount, loandata$BorrowerRate)
+
 ```
 > There exists a fairly weak negative relationship between the borrower rate and the original loan amount.
 
-```{r, echo=FALSE, BorrowerRate_vs_ListingCategory}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, BorrowerRate_vs_ListingCategory}
+
 # Boxplot: ListingCategory and BorrowerRate
 ggplot(data = loandata, aes(x = ListingCategory, y = BorrowerRate)) +
-  geom_boxplot() +
+  geom_boxplot(color = '#425E72') +
   coord_flip()
+
 ```
 
 > It seems that some categories have lower rates and others have higher rates.
 
 ```{r echo=FALSE, IncomeVerificable_and_Homeowner }
+
 # Boxplot: IncomeVerifiable and BorrowerRate
 ggplot(data = loandata, aes(x = IncomeVerifiable, y = BorrowerRate)) +
-  geom_boxplot()
+  geom_boxplot(color = '#425E72')
 
 # Boxplot: IsBorrowerHomeowner and BorrowerRate
 ggplot(data = loandata, aes(x = IsBorrowerHomeowner, y = BorrowerRate)) +
-  geom_boxplot()
+  geom_boxplot(color = '#425E72')
+
 ```
 
 > Borrowers with their income verifiable or are homeowners seem to have lower rates, which makes sense.
 
 Finally in this section, I want to what affect Prosper rating.
 
-```{r echo=FALSE, ProsperRating_vs_CreditScore}
+```{r echo=FALSE, message=FALSE, warning=FALSE, ProsperRating_vs_CreditScore}
+
 # Boxplot: ProsperRating and CreditScoreRangeUpper
 ggplot(data = subset(loandata, ProsperRating != ""),
        aes(x = ProsperRating, y = CreditScoreRangeUpper)) +
-  geom_boxplot()
+  geom_boxplot(color = '#425E72')
+
 ```
 
 > A higher credit score by the consumer rating agency also tends to have a higher Prosper rating.
 
-```{r echo=FALSE, ProsperRating_vs_IsBorrowerHomeowner }
+```{r echo=FALSE, message=FALSE, warning=FALSE, ProsperRating_vs_IsBorrowerHomeowner }
+
 # Bar charts: ProsperRating colored by IsBorrowerHomeowner
 ggplot(data = subset(loandata, loandata$ProsperRating != ""),
        aes(x = ProsperRating, fill = IsBorrowerHomeowner)) +
   geom_bar(position = "dodge") +
   scale_fill_discrete() +
-  scale_fill_manual(values = c("#888888", "#099DD9")) +
+  scale_fill_manual(values = c("#96ADBD", "#425E72")) +
   ylab('Count')
+
 ```
 
 > For top ProsperRating groups like "AA" and "A", Homeowners are the majority.
 
-```{r echo=FALSE, ProsperRating_vs_IncomeVerifiable }
+```{r echo=FALSE, message=FALSE, warning=FALSE, ProsperRating_vs_IncomeVerifiable }
+
 # Bar charts: ProsperRating colored by IncomeVerifiable
 ggplot(data = subset(loandata, loandata$ProsperRating != ""),
        aes(x = ProsperRating, fill = IncomeVerifiable)) +
   geom_bar(position = "dodge") +
   scale_fill_discrete() +
-  scale_fill_manual(values = c("#888888", "#099DD9")) +
+  scale_fill_manual(values = c('#96ADBD', '#425E72')) +
   ylab('Count')
+
 ```
 
 > It seems very hard to get top rating when you don't have your income verfied.
@@ -491,7 +656,8 @@ The strongest relationship I found is the one between the borrower rate and the 
 
 # Multivariate Plots Section
 
-```{r echo=FALSE, Univariate_Plots_Ratings}
+```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots_Ratings}
+
 # Histogram of Prosper Rating by numbers of loans
 ggplot(aes(ProsperRating), data = na.omit(loandata)) +
   geom_histogram(stat='count', aes(fill = ProsperRating)) +
@@ -499,6 +665,7 @@ ggplot(aes(ProsperRating), data = na.omit(loandata)) +
   xlab('Rating') +
   ylab('Number of Loans')
 summary(loandata$ProsperRating)
+
 ```
 
 > **Tip**: Now it's time to put everything together. Based on what you found in
@@ -508,7 +675,8 @@ create here are justified by the plots you explored in the previous section. If
 you plan on creating any mathematical models, this is the section where you
 will do that.
 
-```{r echo=FALSE, Jitter_Plot_Homeowner }
+```{r echo=FALSE, message=FALSE, warning=FALSE, Jitter_Plot_Homeowner }
+
 # Jitter plot: ProsperRating and BorrowerRate, colored by IsBorrowerHomeowner
 ggplot(data = subset(loandata, loandata$ProsperRating != ""),
        aes(x = ProsperRating, y = BorrowerRate)) +
@@ -519,17 +687,20 @@ ggplot(data = subset(loandata, loandata$ProsperRating != ""),
 
 > Using jitter plot, we can visualize the real distribution of the borrrower rate relative to Prosper rating. In addition, I use different colors to indicate whether the individual borrower is a homeowner. This plot shows that most of the "AA" rated borrowers are also homeowners.
 
-```{r echo=FALSE, Colored_Scatter_Plot_OriginalAmount }
+```{r echo=FALSE, message=FALSE, warning=FALSE, Colored_Scatter_Plot_OriginalAmount }
+
 # Scatter plot: LoanOriginalAmount and BorrowerRate, colored by ProsperRating
 ggplot(data = subset(loandata, loandata$ProsperRating != ""),
        aes(x = LoanOriginalAmount, y = BorrowerRate, color = ProsperRating)) +
   geom_point(alpha = 0.5) +
   scale_color_brewer(type = "qual", palette = "Set2")
+
 ```
 
 > In this plot I found several interesting characteristics. First, each rating has its own colored area that is easily recognized, which indicates that Prosper rating is a good predictor for the borrower rate. Second, only highly rated loans ("AA", "A", "B") can have original amount over $30,000, and most lowly rated loans ("E", "HR") are below 10,000.
 
-```{r echo=FALSE, Heat_Map_ListCategory }
+```{r echo=FALSE, message=FALSE, warning=FALSE, Heat_Map_ListCategory }
+
 # Create the frequency table
 subset_table <- subset(loandata, loandata$ProsperRating != "") %>%
   dplyr::select(ProsperRating, ListingCategory, BorrowerRate) %>%
@@ -543,31 +714,37 @@ ggplot(aes(x = ProsperRating, y = ListingCategory
            , fill = BorrowerRate), data = subset_table) +
   geom_tile(stat = "identity") +
   scale_fill_gradientn(colours = colorRampPalette(c("blue", "grey"))(100))
+
 ```
 
 > This plot shows the relative value of the averaged borrower rates of different list categories. 
 
-```{r echo=FALSE, Facet_Boxplot_Category }
+```{r echo=FALSE, message=FALSE, warning=FALSE, Facet_Boxplot_Category }
+
 # Faceted boxplot: ProsperRating and BorrowerRate by ListingCategory
 ggplot(data = subset(loandata, loandata$ProsperRating != ""),
        aes(x = ProsperRating, y = BorrowerRate)) +
-  geom_boxplot() +
+  geom_boxplot(color = '#425E72') +
   facet_wrap( ~ ListingCategory)
+
 ```
 
 > Compared to the previous plot, the boxplots give us more information about the outliers and range of the distribution. But it's more difficult to compare mean values between different categories.
 
-```{r echo=FALSE, Jitter_Plot_Facet_ListCategory }
+```{r echo=FALSE, message=FALSE, warning=FALSE, Jitter_Plot_Facet_ListCategory }
+
 # Faceted jitter plots: ProsperRating and BorrowerRate by ListingCategory
 ggplot(data = subset(loandata, loandata$ProsperRating != ""),
        aes(x = ProsperRating, y = BorrowerRate)) +
-  geom_jitter(alpha = 0.2) +
-  facet_wrap( ~ ListingCategory)
+  geom_jitter(alpha = 0.2, color = '#425E72') +
+  facet_wrap(~ ListingCategory)
+
 ```
 
 > We can know from this plot that "Boat", "Green loans", "RV" categories have less data points. This explains why they have less outliers in the previous plots.
 
-```{r echo=FALSE, Three_Plots_EmploymentStatus }
+```{r echo=FALSE, message=FALSE, warning=FALSE, Three_Plots_EmploymentStatus }
+
 # Create the frequency table
 table <- subset(loandata, loandata$ProsperRating != "") %>%
     dplyr::select(ProsperRating, EmploymentStatus, BorrowerRate) %>%
@@ -580,29 +757,30 @@ ggplot(data = table,
            y = EmploymentStatus,
            fill = BorrowerRate)) +
   geom_tile(stat = "identity")+
-  scale_fill_gradientn(colours = colorRampPalette(c("blue", "grey"))(100))
+  scale_fill_gradientn(colours = colorRampPalette(c("navy", "grey"))(100))
 
 # Faceted boxplot: ProsperRating and BorrowerRate by EmploymentStatus
 ggplot(data = subset(loandata, loandata$ProsperRating != ""),
        aes(x = ProsperRating, y = BorrowerRate)) +
-  geom_boxplot() +
+  geom_boxplot(color = '#425E72') +
   facet_wrap( ~ EmploymentStatus)
 
 # Faceted jitter plots: ProsperRating and BorrowerRate by EmploymentStatus
 ggplot(data = subset(loandata, loandata$ProsperRating != ""),
        aes(x = ProsperRating, y = BorrowerRate)) +
-  geom_jitter(alpha = 0.2) +
+  geom_jitter(alpha = 0.2, color = '#425E72') +
   facet_wrap( ~ EmploymentStatus)
 
 ```
 
 > The heat map shows that highly rated "Not employed" borrowers have to pay slight higher rates. The jitter plots shows that even "Not employed", "Retired", or "Part-time" borrowers can get loan with rates lower than 0.2.
 
-```{r echo=FALSE, Jitter_Plots_Term }
+```{r echo=FALSE, message=FALSE, warning=FALSE, Jitter_Plots_Term }
+
 # Faceted jitter plots: ProsperRating and BorrowerRate by Term
 ggplot(data = subset(loandata, loandata$ProsperRating != ""),
        aes(x = ProsperRating, y = BorrowerRate)) +
-  geom_jitter(alpha = 0.2) +
+  geom_jitter(color = '#425E72', alpha = 0.2) +
   facet_wrap( ~ Term)
 
 # Calculate means for each Term
@@ -612,16 +790,20 @@ tapply(loandata$BorrowerRate, loandata$Term, mean)
 # Calculate standard deviations for each Term
 print("standard deviation")
 tapply(loandata$BorrowerRate, loandata$Term, sd)
+
 ```
 > Most loans are either 3-year or 5-year loans, and they have higher borrower rates, and the main difference between 3-year loans and 5-year loans is deivation.
 
 ## Multivariate Analysis
 
 #### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
+Term loan is quite a good indicator whether we have a better Lender Yield or not. Also, we see how three variables Lender Yield, Prosper Rating and Debt To Income Ratio come together and how it affect each order. 
 
 #### Were there any interesting or surprising interactions between features?
+The criteria for being an AA borrowers seems to be tighten over the year and a there seems to be a fixed borrower rate in criteria HR and AA.
 
 #### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
+No
 
 ------
 
@@ -636,22 +818,22 @@ units), and good aesthetic choices (e.g. color, transparency). After each plot,
 make sure you justify why you chose each plot by describing what it shows.
 
 ### Plot One
-```{r echo=FALSE, warning=FALSE, Plot_One}
+```{r echo=FALSE, message=FALSE, warning=FALSE, warning=FALSE, Plot_One}
+
 # Subplot 1: Boxplot
 p3 <- ggplot(data = subset(loandata, ProsperRating != ""),
              aes(x = ProsperRating, y = BorrowerRate)) +
-  geom_boxplot() +
+  geom_boxplot(color = '#425E72') +
   labs(
     title = "Boxplot and Jitter Plot",
     subtitle = "Borrower rate by Prosper rating",
     x = "",
-    y = "Borrower Rate"
-  )
+    y = "Borrower Rate")
 
 # Subplot 2: Jitter plot
 p4 <- ggplot(data = subset(loandata, loandata$ProsperRating != ""),
              aes(x = ProsperRating, y = BorrowerRate)) +
-  geom_jitter(alpha = 0.2) +
+  geom_jitter(alpha = 0.2, color = '#425E72') +
   labs(x = "Prosper Rating",
        y = "Borrower Rate")
 
@@ -664,7 +846,8 @@ grid.arrange(p3, p4, ncol = 1)
 The Prosper rating is an important factor for the borrower rate. High Prosper rating is linked to lower borrower rates.
 
 ### Plot Two
-```{r echo=FALSE, Plot_Two}
+```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_Two}
+
 # Colored scatter plot: LoanOriginalAmount, BorrowerRate, ProsperRating
 ggplot(
   data = subset(loandata, loandata$ProsperRating != ""),
@@ -675,19 +858,19 @@ ggplot(
     title = "Borrower rate by Prosper rating and loan original amount",
     x = "Loan Original Amount($)",
     y = "Borrower Rate",
-    color = "Prosper Rating"
-  )
+    color = "Prosper Rating")
+
 ```
 
 ### Description Two
 Only highly rated loans ("AA", "A", "B") can have original amount over $30,000, and most lowly rated loans ("E", "HR") are below 10,000.  Again Prosper rating is an great indicator of the borrower rate. The different colored areas can be easily recognized.
 
 ### Plot Three
-```{r echo=FALSE, Plot_Three}
+```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_Three}
 # Faceted jitter plots: ProsperRating and BorrowerRate by Term
 p5 <- ggplot(data = subset(loandata, loandata$ProsperRating != ""),
              aes(x = ProsperRating, y = BorrowerRate)) +
-  geom_jitter(alpha = 0.1) +
+  geom_jitter(alpha = 0.1, color = '#425E72') +
   facet_wrap( ~ Term) +
   labs(title = "Borrower rate by Prosper rating and term",
        x = "Prosper Rating",
@@ -717,3 +900,12 @@ The Prosper loan dataset contains up to 81 variables, which makes it hard to exp
 In my subset dataset, there were only 7 numerical variables and my main interest was between the borrower rate and the various borrower statuses. Therefore, the majority of the visualizations I created included at least one categorical variable or more. I spent a lot of time researching how to create visualization with one, two, or more categorical variables. The solution is to use boxplots, grouped bar charts, jitter plots, and heat maps for the visualizations.
 
 The result of this analysis shows that Prosper rating and term are two major indicators of the borrower rate. Other borrower statuses also have effects on borrower rate but their effects are either small or are also factors of Prosper rating. I think this analysis would be a good reference for anyone who wants to borrower money from a p2p lending platform. 
+
+
+
+
+I'd almost considering switching to another dataset as the more I'm looking at, the more I get confused and see no significant correlation between the variables. I was suspecting to see few obvious trend and correlation without much investigation but I was wrong. Although there are more than 30 plots in this report. Lots of charts were never appeared here as I did lots of back-of-the-envelope visualisation but wouldn't make any good story. In addition to that, I have to go through each variable one by one, try to understand the meaning as I was not an expert in the financial industry. 
+
+I then categorize these variables into three different players: Prosper company, lenders & borrowers. Only then the variables makes a lot more sense & I'm trying to make assumption a long the way to explore it. At the end of the project, it did give me a sense of understanding for the lending business. 
+
+As I progress through the analysis, I only found Debt to Income ratio is the predictor of Lending Yield and Borrower Rate and the other variables seems not to play that big of a role. To expand to project, we can try to combine various variables and make a predictive model using logistic regression for a go/no-go investment decision or any classification algorigthm would make sense.

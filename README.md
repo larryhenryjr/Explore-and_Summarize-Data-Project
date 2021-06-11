@@ -4,8 +4,8 @@ As part of Udacity's Data Analysis Project, I will use R and apply exploratory d
 I will be exploring the Prosper loan dataset (a p2p lending platform) with R and RStudio. The main purpose of this analysis is to explore the various factors that affect borrowers' rate. The data can be find [here]()
 
 ## Project Files
-* `explore-and-summarize-data.rmd`: R markdown for the analysis
-* `explore-and-summarize-data.html`: knitted html file
+* `esd-project-file.rmd`: R markdown for the analysis
+* `esd-project-file.html`: knitted html file
 
 ## Project Overview
 
