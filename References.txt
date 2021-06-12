@@ -1,0 +1,13 @@
+References:
+
+1. The data set chosen for this project is the Loan Data from Prosper. This data set contains 113,937 loans with 81 variables on each loan.
+
+https://docs.google.com/document/d/e/2PACX-1vRmVtjQrgEPfE3VoiOrdeZ7vLPO_p3KRdb_o-z6E_YJ65tDOiXkwsDpLFKI3lUxbD6UlYtQHXvwiZKx/pub?embedded=true
+
+
+2. For help in creating my code for data R Markdown and data visuals, I used the following links.
+
+https://www.rstudio.com/resources/cheatsheets/
+https://r4ds.had.co.nz/data-visualisation.html
+https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html#Table_Styles
+https://rmarkdown.rstudio.com/authoring_basics.html
