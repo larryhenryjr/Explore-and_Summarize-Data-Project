@@ -1,7 +1,7 @@
 # Project: Explore and Summarize Data
 As part of Udacity's Data Analysis Project, I will use R and apply exploratory data analysis techniques to explore relationships in one variable to multiple variables and to explore a selected data set for distributions, outliers, and anomalies.
 
-I will be exploring the Prosper loan dataset (a p2p lending platform) with R and RStudio. The main purpose of this analysis is to explore the various factors that affect borrowers' rate. The data can be find [here]()
+I will be exploring the Prosper loan dataset (a p2p lending platform) with R and RStudio. The main purpose of this analysis is to explore the various factors that affect borrowers' rate. The data can be find [here](https://www.google.com/url?q=https://s3.amazonaws.com/udacity-hosted-downloads/ud651/prosperLoanData.csv&sa=D&source=editors&ust=1623393736936000&usg=AOvVaw2HBKKqbe6hRAo8bU0sC6GQ)
 
 ## Project Files
 * `esd-project-file.rmd`: R markdown for the analysis
