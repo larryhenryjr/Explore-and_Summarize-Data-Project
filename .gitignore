@@ -1,3 +1,5 @@
 .github/**
 *.pyc
 drafts/**
+csv/**
+Figs/**

@@ -11,3 +11,6 @@ https://www.rstudio.com/resources/cheatsheets/
 https://r4ds.had.co.nz/data-visualisation.html
 https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html#Table_Styles
 https://rmarkdown.rstudio.com/authoring_basics.html
+http://applied-r.com/rcolorbrewer-palettes/
+https://bookdown.org/yihui/rmarkdown-cookbook/kable.html
+https://www.datanovia.com/en/blog/ggplot-title-subtitle-and-caption/
